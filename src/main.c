@@ -34,12 +34,12 @@ double plant(double u, unsigned start, double a, double b)
     return(y);
 }
 
-// PID Controller written in C
+// PID Controller written in C @@
 // This function takes in the error and a start flag and returns the control signal
 // The start flag should be 1 the first time this function is called
 double PIDcontrol(double en, unsigned start)
 {
-    static double Kp=0.25, Ki=0.125,  Kd=0.75, sn, enOld, un;
+    static double Kp=0.25, Ki=0.1,  Kd=0.75, sn, enOld, un;
     if (start)
     {
         sn = enOld = 0.0;

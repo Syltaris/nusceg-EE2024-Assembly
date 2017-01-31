@@ -6,9 +6,9 @@
  	.thumb_func
 @  EE2024 Assignment 1: pid_ctrl(int en, int st) assembly language function
 @  CK Tham, ECE, NUS, 2017
-.equ KP, 2
-.equ KI, 1
-.equ KD, 6
+.equ KP, 5
+.equ KI, 2
+.equ KD, 15
 .equ sn_hi_limit, 9500000
 .equ sn_lo_limit, -9500000
 
@@ -58,7 +58,9 @@ compute_en:
 	MOV R3, R0 @ enOld = en
 	ADD R0, R6, R8
 	ADD R0, R0, R9
-	LSR R0, R0, 3 @ divide un by 8
+	@LSR R0, R0, 3 @ divide un by 8
+	MOV R4, 20
+	SDIV R0, R4
 
 save_reg:
 	LDR R4, =sn
