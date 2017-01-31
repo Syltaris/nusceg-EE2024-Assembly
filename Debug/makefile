@@ -29,7 +29,7 @@ all: EE2024Assign1S21617.axf
 EE2024Assign1S21617.axf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	arm-none-eabi-gcc -nostdlib -L"C:\Users\Yu Peng\Documents\LPCXpresso_6.1.4_194\workspace\Lib_CMSISv1p30_LPC17xx\Debug" -Xlinker --gc-sections -Xlinker -Map=EE2024Assign1S21617.map -mcpu=cortex-m3 -mthumb -T "EE2024Assign1S21617_Debug.ld" -o"EE2024Assign1S21617.axf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -nostdlib -Xlinker --gc-sections -Xlinker -Map=EE2024Assign1S21617.map -mcpu=cortex-m3 -mthumb -T "EE2024Assign1S21617_Debug.ld" -o"EE2024Assign1S21617.axf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
