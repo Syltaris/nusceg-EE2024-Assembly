@@ -31,14 +31,13 @@ init_reg:
 
 check_sn:
 	ADD R2, R2, R0 @ sn = sn + en
-	LDR R4, =sn_hi_limit
 
+	LDR R4, =sn_hi_limit
 	CMP R2, R4 @ if sn > 9
 	IT GE
 	MOVGE R2, R4 @ sn = 9
 
 	LDR R4, =sn_lo_limit
-
 	CMP R2, R4 @ if sn < -9
 	IT LE
 	MOVLE R2, R4 @ sn = -9
@@ -57,7 +56,7 @@ compute_en:
 
 	MOV R3, R0 @ enOld = en
 	ADD R0, R6, R8
-	ADD R0, R0, R9
+	ADD R0, R9
 	@LSR R0, R0, 3 @ divide un by 8
 	MOV R4, 20
 	SDIV R0, R4
