@@ -23,6 +23,12 @@ pid_ctrl:
 	LDR R4, [R2]
 	LDR R5, [R3]
 
+	LDR R8, =sn_lo_limit
+	LDR R9, =sn_hi_limit
+
+	LDR R10, =KD
+	LDR R11, =KP
+
 	@if st != 1, initialise regs
 	CMP R1, #1
 	IT NE
@@ -33,35 +39,29 @@ init_reg:
 	MOV R5, #0 @ enOld
 
 check_sn:
-	ADD R4, R4, R0 @ sn = sn + en
+	ADD R4, R4, R0 @ sn = snOld + en
 
-	LDR R1, =sn_hi_limit
-	CMP R4, R1 @ if sn > 9
+	CMP R4, R9 @ if sn > 9
 	IT GE
-	MOVGE R4, R1 @ sn = 9
+	MOVGE R4, R9 @ sn = 9
 
-	LDR R1, =sn_lo_limit
-	CMP R4, R1 @ if sn < -9
+	CMP R4, R8 @ if sn < -9
 	IT LE
-	MOVLE R4, R1 @ sn = -9
+	MOVLE R4, R8 @ sn = -9
 
 compute_en:
-	LDR R10, =KD
 	SUB R5, R0, R5 @ R5 = en - enOld
 	MUL R5, R10, R5 @ R5 = KD * R5
 	STR R0, [R3] @ save enOld @ enOld = en
 
-	LDR R10, =KI
+	LSR R10, 3 @ KI = KD / 2^3
 	STR R4, [R2] @ save sn
-	MLA R4, R10, R4, R5 @ R4 = KI * sn + KD * R5
+	MLA R4, R10, R4, R5 @ R4 = KI * sn + R5
 
-	LDR R10, =KP
-	MLA R0, R10, R0, R4 @ R0 = KP * en + R4
+	MLA R0, R11, R0, R4 @ R0 = KP * en + R4
 
 	@LSR R0, R0, 3 @ divide un by 8
 	MOV R4, 20
 	SDIV R0, R4
-
-save_reg:
 
  	BX LR @ return to calling C fn
