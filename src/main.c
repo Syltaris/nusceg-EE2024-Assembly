@@ -39,7 +39,7 @@ double plant(double u, unsigned start, double a, double b)
 // The start flag should be 1 the first time this function is called
 double PIDcontrol(double en, unsigned start)
 {
-    static double Kp=0.25, Ki=0.1,  Kd=0.75, sn, enOld, un;
+    static double Kp=0.25, Ki=0.1,  Kd=0.8, sn, enOld, un;
     if (start)
     {
         sn = enOld = 0.0;
@@ -72,15 +72,12 @@ int main(void)
         y = plant(u,st,-0.8,0.2); // Do NOT change the plant parameters
         e = sp - y;
 
-        //printf("y = %lf\n",y);
-
         //  Call the assembly language function pid_ctrl() here
         intermediate = pid_ctrl((e * 1000000), st);
 
-        u = (double)intermediate / 1000000;
+        u = (double)intermediate * 0.000001;
 
-        //printf("u = %lf\n", u);
-       	printf("e = %lf\n",e);
+       	printf("%lf\n",e);
     }
     stopTicks = usTicks;
     printf("Time taken (ASM version): %ld microseconds\n",(stopTicks-startTicks));

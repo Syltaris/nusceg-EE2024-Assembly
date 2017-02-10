@@ -17,6 +17,8 @@
 .lcomm enOld 4
 
 pid_ctrl:
+	PUSH {R2-R5}
+
 	LDR R2, =sn
 	LDR R3, =enOld
 
@@ -25,9 +27,6 @@ pid_ctrl:
 
 	LDR R8, =sn_lo_limit
 	LDR R9, =sn_hi_limit
-
-	LDR R10, =KD
-	LDR R11, =KP
 
 	@if st != 1, initialise regs
 	CMP R1, #1
@@ -41,27 +40,33 @@ init_reg:
 check_sn:
 	ADD R4, R4, R0 @ sn = snOld + en
 
-	CMP R4, R9 @ if sn > 9
-	IT GE
-	MOVGE R4, R9 @ sn = 9
-
-	CMP R4, R8 @ if sn < -9
+	CMP R4, R8 @ if sn < -9500000
 	IT LE
-	MOVLE R4, R8 @ sn = -9
+	MOVLE R4, R8 @ sn = -9500000
+
+	CMP R4, R9 @ if sn > 9500000
+	IT GE
+	MOVGE R4, R9 @ sn = 9500000
 
 compute_en:
-	SUB R5, R0, R5 @ R5 = en - enOld
-	MUL R5, R10, R5 @ R5 = KD * R5
-	STR R0, [R3] @ save enOld @ enOld = en
+	STR R4, [R2]
+	STR R0, [R3]
 
-	LSR R10, 3 @ KI = KD / 2^3
-	STR R4, [R2] @ save sn
-	MLA R4, R10, R4, R5 @ R4 = KI * sn + R5
+	MOV R3, #8
+	SUB R5, R0, R5 @ en - enOld
+	MUL R5, R5, R3 @ sn + 8(en - enOld)
 
-	MLA R0, R11, R0, R4 @ R0 = KP * en + R4
+	ADD R2, R4, R5 @ sn + 8(en - enold)
 
-	@LSR R0, R0, 3 @ divide un by 8
-	MOV R4, 20
-	SDIV R0, R4
+	MOV R3, #2
+	MUL R2, R3 @ Ki(sn + 8(en - enOld))
+
+	MOV R3, #5
+	MLA R0, R0, R3, R2 @ Kp(en) + Ki(sn + 8(en - enOld))
+
+	MOV R3, #20
+	SDIV R0, R3
+
+	POP {R2-R5}
 
  	BX LR @ return to calling C fn
